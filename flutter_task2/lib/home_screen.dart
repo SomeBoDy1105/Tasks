@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-
+import 'package:flutter_task2/todolist.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,10 +17,15 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Home Screen'),
         elevation: 0,
       ),
-      body: ListView(
-        children:const [
-          
-        ]
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const TodoList()),);
+          },
+          child: const Text('Go to Splash Screen'),
+        ),
       ),
     );
   }
