@@ -11,7 +11,6 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
-
   final todoController = TextEditingController();
   bool validated = true;
   String errorMessage = "";
@@ -22,47 +21,52 @@ class _TodoListState extends State<TodoList> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(builder: (context,snap){
-      if (snap.hasData == null) {
-        return const Center(
-          child: Text("NO Data"),
-        );
-      }  else{
-        if (myTodos.isEmpty ) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("My Tasks"),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: showAlertDialog,
-              backgroundColor: Colors.purple,
-              child: const Icon(Icons.add),
-            ),
-            body: const Center(
-              child: Text("No Tasks Available",style: TextStyle(
-                fontSize: 25.0,
-              ),),
-            ),
+    return FutureBuilder(
+      builder: (context, snap) {
+        if (snap.hasData == null) {
+          return const Center(
+            child: Text("NO Data"),
           );
-        }  else{
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("My Tasks"),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: showAlertDialog,
-              backgroundColor: Colors.purple,
-              child: const Icon(Icons.add),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                children: listOfCards,
+        } else {
+          if (myTodos.isEmpty) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text("My Tasks"),
               ),
-            )
-          );
+              floatingActionButton: FloatingActionButton(
+                onPressed: showAlertDialog,
+                backgroundColor: Colors.purple,
+                child: const Icon(Icons.add),
+              ),
+              body: const Center(
+                child: Text(
+                  "No Tasks Available",
+                  style: TextStyle(
+                    fontSize: 25.0,
+                  ),
+                ),
+              ),
+            );
+          } else {
+            return Scaffold(
+                appBar: AppBar(
+                  title: const Text("My Tasks"),
+                ),
+                floatingActionButton: FloatingActionButton(
+                  onPressed: showAlertDialog,
+                  backgroundColor: Colors.purple,
+                  child: const Icon(Icons.add),
+                ),
+                body: SingleChildScrollView(
+                  child: Column(
+                    children: listOfCards,
+                  ),
+                ));
+          }
         }
-      }
-    },future: query(),);
+      },
+      future: query(),
+    );
   }
 
   void showAlertDialog() {
@@ -90,13 +94,15 @@ class _TodoListState extends State<TodoList> {
                       todoAdded = value;
                     },
                   ),
-                  const SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   MaterialButton(
                       color: Colors.purple,
-                      child: const Text("Add", style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18.0
-                      ),),
+                      child: const Text(
+                        "Add",
+                        style: TextStyle(color: Colors.white, fontSize: 18.0),
+                      ),
                       onPressed: () {
                         if (todoController.text.isEmpty) {
                           setState(() {
@@ -111,11 +117,9 @@ class _TodoListState extends State<TodoList> {
                         } else {
                           addTodo();
                         }
-                      }
-                  )
+                      })
                 ],
               ),
-
             );
           });
         });
@@ -137,7 +141,7 @@ class _TodoListState extends State<TodoList> {
 
   Future<bool> query() async {
     myTodos = [];
-    listOfCards=[];
+    listOfCards = [];
     var listOfAllTodos = await dbHelper.queryAllTodos();
     listOfAllTodos?.forEach((task) {
       myTodos.add(task.toString());
@@ -148,21 +152,27 @@ class _TodoListState extends State<TodoList> {
           child: Container(
             padding: const EdgeInsets.all(5.0),
             child: ListTile(
-              title: Text(task['todo'],
-                style: const TextStyle(
-                    fontSize: 18.0
-                ),),
-
+              title: Text(
+                task['todo'],
+                style: const TextStyle(fontSize: 18.0),
+              ),
+              onLongPress: () async {
+                await updateTodo(context, task['id'], task['todo']);
+                setState(() {
+                  query();
+                });
+              },
               trailing: IconButton(
-                onPressed: (){
+                onPressed: () {
                   dbHelper.deleteTodo(task['id']);
                   print("Task Deleted");
-                  setState(() {
-                  });
+                  setState(() {});
                 },
-                icon: const Icon(Icons.delete,color: Colors.red,),
+                icon: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
               ),
-
             ),
           ),
         ),
@@ -170,6 +180,39 @@ class _TodoListState extends State<TodoList> {
     });
     return Future.value(true);
   }
+Future<void> updateTodo(BuildContext context, int id, String currentTodo) async {
+  final TextEditingController textController = TextEditingController(text: currentTodo);
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: const Text('Update task'),
+        content: TextField(
+          controller: textController,
+        ),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          TextButton(
+            child: const Text('Update'),
+            onPressed: () async {
+              Map<String, dynamic> todo = {
+                DatabaseHelper.columnId: id,
+                DatabaseHelper.columnName: textController.text,
+              };
+              await dbHelper.updateTodo(todo);
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 
 }
 // appBar: AppBar(
