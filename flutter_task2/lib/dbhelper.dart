@@ -14,7 +14,7 @@ class DatabaseHelper {
   static const _databaseVersion = 1;
 
   static const table = 'my_table';
-  
+
   static const done = 0;
 
   static const columnId = 'id';
@@ -53,7 +53,7 @@ class DatabaseHelper {
 
     $columnId INTEGER PRIMARY KEY, 
 
-    $columnName TEXT NOT NULL 
+    $columnName TEXT NOT NULL,
     
     done INTEGER NOT NULL 
 
@@ -63,15 +63,15 @@ class DatabaseHelper {
   }
 
   Future<int?> insert(Map<String, dynamic> todo) async {
-  Database? db = await instance.database;
+    Database? db = await instance.database;
 
-  Map<String, dynamic> newTodo = {
-    DatabaseHelper.columnName: todo[DatabaseHelper.columnName],
-    'done': todo['done'] ?? 0, // set default value to 0 if not provided
-  };
+    Map<String, dynamic> newTodo = {
+      DatabaseHelper.columnName: todo[DatabaseHelper.columnName],
+      'done': todo['done'] ?? 0, // set default value to 0 if not provided
+    };
 
-  return await db?.insert(table, newTodo);
-}
+    return await db?.insert(table, newTodo);
+  }
 
   Future<List<Map<String, dynamic>>?> queryAllTodos() async {
     Database? db = await instance.database;

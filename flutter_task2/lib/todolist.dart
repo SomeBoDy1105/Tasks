@@ -31,6 +31,7 @@ class _TodoListState extends State<TodoList> {
           if (myTodos.isEmpty) {
             return Scaffold(
               appBar: AppBar(
+                backgroundColor: Colors.purple,
                 title: const Text("My Tasks"),
               ),
               floatingActionButton: FloatingActionButton(
@@ -50,11 +51,12 @@ class _TodoListState extends State<TodoList> {
           } else {
             return Scaffold(
                 appBar: AppBar(
+                  backgroundColor: Colors.purple,
                   title: const Text("My Tasks"),
                 ),
                 floatingActionButton: FloatingActionButton(
                   onPressed: showAlertDialog,
-                  backgroundColor: Colors.purple,
+                  backgroundColor: Colors.deepPurpleAccent,
                   child: const Icon(Icons.add),
                 ),
                 body: SingleChildScrollView(
@@ -170,7 +172,7 @@ class _TodoListState extends State<TodoList> {
                 },
                 icon: const Icon(
                   Icons.delete,
-                  color: Colors.red,
+                  color: Colors.black,
                 ),
               ),
             ),
@@ -215,17 +217,3 @@ Future<void> updateTodo(BuildContext context, int id, String currentTodo) async 
 }
 
 }
-// appBar: AppBar(
-// title: Text("My Tasks"),
-// ),
-// body: SingleChildScrollView(
-// child: Column(
-// children: [
-// ],
-// ),
-// ),
-// floatingActionButton: FloatingActionButton(
-// onPressed: showAlertDialog,
-// child: Icon(Icons.add),
-// backgroundColor: Colors.purple,
-// ),
